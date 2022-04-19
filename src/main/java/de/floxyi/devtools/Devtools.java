@@ -15,7 +15,7 @@ public final class Devtools extends JavaPlugin {
     public void onEnable() {
 
         int pluginId = 13046;
-        Metrics metrics = new Metrics(this, pluginId);
+        new Metrics(this, pluginId);
 
         Bukkit.getLogger().info(getPrefix() + " _____          _______          _     ");
         Bukkit.getLogger().info(getPrefix() + "|  __ \\        |__   __|        | |    ");
@@ -37,11 +37,11 @@ public final class Devtools extends JavaPlugin {
     }
 
     public static String getPrefix() {
-        return ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "DevTools" + ChatColor.DARK_GRAY + "] " + ChatColor.GRAY;
+        return ChatColor.GRAY + "[" + ChatColor.GOLD + "DevTools" + ChatColor.GRAY + "] " + ChatColor.GRAY;
     }
 
     private void commandRegistration() {
-        Objects.requireNonNull(getCommand("loc")).setExecutor(new LocationCommand());
+        Objects.requireNonNull(getCommand("location")).setExecutor(new LocationCommand());
         Objects.requireNonNull(getCommand("sound")).setExecutor(new PlaySoundCommand());
     }
 }

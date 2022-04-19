@@ -6,9 +6,7 @@ authors: [ Floxyi ]
 description: A useful Minecraft Plugin for Java Plugin Developers
 
 commands:
-  loc:
-    description: Makes a console log with the current locations's declaration for Java
+  location:
+    description: Makes a console log with the current location's declaration for Java
   sound:
     description: Plays the specified sound
-  tps:
-    description: Get the current TPS
