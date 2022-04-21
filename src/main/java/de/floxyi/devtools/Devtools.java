@@ -1,7 +1,7 @@
 package de.floxyi.devtools;
 
 import de.floxyi.devtools.commands.LocationCommand;
-import de.floxyi.devtools.commands.PlaySoundCommand;
+import de.floxyi.devtools.commands.SoundCommand;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,8 +14,7 @@ public final class Devtools extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        int pluginId = 13046;
-        new Metrics(this, pluginId);
+        new Metrics(this, 13046);
 
         Bukkit.getLogger().info(getPrefix() + " _____          _______          _     ");
         Bukkit.getLogger().info(getPrefix() + "|  __ \\        |__   __|        | |    ");
@@ -27,12 +26,12 @@ public final class Devtools extends JavaPlugin {
         Bukkit.getLogger().info(getPrefix() + "                             by Floxyii");
         Bukkit.getLogger().info(getPrefix() + "");
         Bukkit.getLogger().info(getPrefix() + "Plugin is getting activated!");
+
         commandRegistration();
     }
 
     @Override
     public void onDisable() {
-
         Bukkit.getLogger().info(getPrefix() + "Plugin is getting deactivated!");
     }
 
@@ -42,6 +41,6 @@ public final class Devtools extends JavaPlugin {
 
     private void commandRegistration() {
         Objects.requireNonNull(getCommand("location")).setExecutor(new LocationCommand());
-        Objects.requireNonNull(getCommand("sound")).setExecutor(new PlaySoundCommand());
+        Objects.requireNonNull(getCommand("sound")).setExecutor(new SoundCommand());
     }
 }

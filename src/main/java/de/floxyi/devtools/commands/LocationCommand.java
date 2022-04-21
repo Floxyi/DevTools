@@ -25,12 +25,14 @@ public class LocationCommand implements TabExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
 
         if(!(sender instanceof Player player)) {
-            sender.sendMessage(Devtools.getPrefix() + ChatColor.RED + "You need to be a Player in order to execute this command!");
+            sender.sendMessage(Devtools.getPrefix() + ChatColor.RED + "You need to be a Player in order to " +
+                    "execute this command!");
             return false;
         }
 
         if(args.length == 0 || args.length > 2) {
-            player.sendMessage(Devtools.getPrefix() + ChatColor.RED + "You need to set valid arguments " + ChatColor.GOLD + "/location <player \"player name\"> <block \"player name\"> <view \"player name\">");
+            player.sendMessage(Devtools.getPrefix() + ChatColor.RED + "You need to set valid arguments " +
+                    ChatColor.GOLD + "/location <player \"player name\"> <block \"player name\"> <view \"player name\">");
             return false;
         }
 
@@ -47,7 +49,8 @@ public class LocationCommand implements TabExecutor {
                 }
             }
             if(argPlayer == null) {
-                player.sendMessage(Devtools.getPrefix() + ChatColor.RED + "The specified player (" + ChatColor.GOLD + args[1] + ChatColor.RED + ") is not online!");
+                player.sendMessage(Devtools.getPrefix() + ChatColor.RED + "The specified player (" +
+                        ChatColor.GOLD + args[1] + ChatColor.RED + ") is not online!");
                 return false;
             }
             locPlayer = argPlayer;
@@ -56,26 +59,37 @@ public class LocationCommand implements TabExecutor {
 
         if(args[0].equalsIgnoreCase("player")) {
             Location loc = locPlayer.getLocation();
-            Bukkit.getLogger().info(Devtools.getPrefix() + "The location of " + locPlayer.getName() + " is: new Location(" + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + ")");
-            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The location of the player (" + ChatColor.GOLD + player.getName() + ChatColor.GREEN + ") is in the console!");
-            sendCopyMessage(player, "new Location(Bukkit.getWorld(" + world + "), " + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + ")");
+            Bukkit.getLogger().info(Devtools.getPrefix() + "The location of " + locPlayer.getName() +
+                    " is: new Location(" + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + ")");
+            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The location of the player (" +
+                    ChatColor.GOLD + player.getName() + ChatColor.GREEN + ") is in the console!");
+            sendCopyMessage(player, "new Location(Bukkit.getWorld(" + world + "), " + loc.getX() + ", " +
+                    loc.getY() + ", " + loc.getZ() + ")");
             return true;
         }
 
         if(args[0].equalsIgnoreCase("block")) {
             Block target = locPlayer.getTargetBlock(null, 5);
             Location loc = target.getLocation();
-            Bukkit.getLogger().info(Devtools.getPrefix() + "The location of " + target.getBlockData().getMaterial() + " is: new Location(" + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + ")");
-            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The location of the block (" + ChatColor.GOLD + target.getBlockData().getMaterial() + ChatColor.GREEN + ") is in the console!");
-            sendCopyMessage(player, "new Location(Bukkit.getWorld(" + world + "), " + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + ")");
+            Bukkit.getLogger().info(Devtools.getPrefix() + "The location of " +
+                    target.getBlockData().getMaterial() + " is: new Location(" + loc.getX() + ", " + loc.getY() +
+                    ", " + loc.getZ() + ")");
+            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The location of the block (" +
+                    ChatColor.GOLD + target.getBlockData().getMaterial() + ChatColor.GREEN + ") is in the console!");
+            sendCopyMessage(player, "new Location(Bukkit.getWorld(" + world + "), " + loc.getX() + ", " +
+                    loc.getY() + ", " + loc.getZ() + ")");
             return true;
         }
 
         if (args[0].equalsIgnoreCase("view")) {
             Location loc = locPlayer.getLocation();
-            Bukkit.getLogger().info(Devtools.getPrefix() + "The location and viewpoint of " + player.getName() + " is: new Location(" + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + ", " + loc.getYaw() + ", " + loc.getPitch() + ")");
-            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The location and viewpoint of the player (" + ChatColor.GOLD + player.getName() + ChatColor.GREEN + ") is in the console!");
-            sendCopyMessage(player, "new Location(Bukkit.getWorld(" + world + "), " + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + ", " + loc.getYaw() + ", " + loc.getPitch() + ")");
+            Bukkit.getLogger().info(Devtools.getPrefix() + "The location and viewpoint of " +
+                    player.getName() + " is: new Location(" + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() +
+                    ", " + loc.getYaw() + ", " + loc.getPitch() + ")");
+            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The location and viewpoint of the player (" +
+                    ChatColor.GOLD + player.getName() + ChatColor.GREEN + ") is in the console!");
+            sendCopyMessage(player, "new Location(Bukkit.getWorld(" + world + "), " + loc.getX() + ", " +
+                    loc.getY() + ", " + loc.getZ() + ", " + loc.getYaw() + ", " + loc.getPitch() + ")");
             return true;
         }
 
