@@ -1,4 +1,4 @@
-![DevTools Thumbnail](https://www.spigotmc.org/attachments/devtools_banner-png.697945/)
+![DevTools Thumbnail](https://www.spigotmc.org/attachments/devtools_banner-png.697973/)
 
 **[DevTools](https://www.spigotmc.org/resources/devtools.96876/)** is a **Minecraft Java Plugin** that was developed to make a lot of things during developing your own plugin easier (**for Java Developers**).
 Whenever you set up your testing server, just install this small plugin and later on it will save you a lot of minutes!
