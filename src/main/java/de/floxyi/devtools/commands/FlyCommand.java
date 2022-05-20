@@ -60,14 +60,16 @@ public class FlyCommand implements TabExecutor {
 
     @Nullable
     @Override
-    public List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        List<String> args = new ArrayList<>();
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+        List<String> arg = new ArrayList<>();
 
-        for(int i = 1; i < 10; i++) {
-            args.add("0." + i);
+        if (args.length == 1) {
+            for (int i = 1; i < 10; i++) {
+                arg.add("0." + i);
+            }
+            arg.add("1");
         }
-        args.add("1");
 
-        return args;
+        return arg;
     }
 }
