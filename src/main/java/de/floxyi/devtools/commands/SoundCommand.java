@@ -1,6 +1,10 @@
 package de.floxyi.devtools.commands;
 
 import de.floxyi.devtools.Devtools;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
@@ -60,12 +64,15 @@ public class SoundCommand implements TabExecutor {
             player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The sound " + ChatColor.GOLD +
                     sound.name() + ChatColor.GREEN + " was played in volume " + ChatColor.GOLD + volume +
                     ChatColor.GREEN + " and in pitch " + ChatColor.GOLD + pitch + ChatColor.GREEN + "!");
+            sendReplayMessage(player, s, args);
+
             return true;
         }
 
         player.playSound(player.getLocation(), sound, 1f, 1f);
         player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The sound " + ChatColor.GOLD +
                 sound.name() + ChatColor.GREEN + " was played in normal volume and pitch!");
+        sendReplayMessage(player, s, args);
         return true;
     }
 
@@ -75,10 +82,23 @@ public class SoundCommand implements TabExecutor {
             List<String> arguments = new ArrayList<>();
             Sound[] sounds = Sound.values();
             for (Sound sound : sounds) {
-                arguments.add(sound.name()); //.toString()
+                arguments.add(sound.name());
             }
             return arguments;
         }
         return Collections.emptyList();
+    }
+
+    public void sendReplayMessage(Player player, String s, String[] args) {
+        String commandLine = "/" + s;
+        for(String arg : Arrays.stream(args).toList()) {
+            commandLine = commandLine.concat(" " + arg);
+        }
+
+        TextComponent message = new TextComponent(Devtools.getPrefix() + "[" + ChatColor.AQUA + "Play again" + ChatColor.GRAY + "]" + ChatColor.RESET + ChatColor.GREEN + " Click to play this sound again!");
+        message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, commandLine));
+        message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Plays this sound again!")));
+
+        player.spigot().sendMessage(message);
     }
 }
