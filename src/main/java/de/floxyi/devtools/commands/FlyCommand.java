@@ -33,7 +33,7 @@ public class FlyCommand implements TabExecutor {
             float speed = Float.parseFloat(args[0]);
 
             if(speed > 1) {
-                player.sendMessage(Devtools.getPrefix() + ChatColor.RED + "You can't set your flying speed above " + ChatColor.GOLD + " 1" + ChatColor.RED + "!");
+                player.sendMessage(Devtools.getPrefix() + ChatColor.RED + "You can't set your flying speed above " + ChatColor.GOLD + " 1" + ChatColor.RED + " speed !");
                 return false;
             }
 
@@ -42,12 +42,13 @@ public class FlyCommand implements TabExecutor {
             }
 
             player.setFlySpeed(speed);
-            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "You enabled flying in " + ChatColor.GOLD + speed + ChatColor.GREEN + "!");
+            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "You enabled flying in " + ChatColor.GOLD + speed + ChatColor.GREEN + " speed !");
 
             return true;
         }
 
         player.setAllowFlight(!player.getAllowFlight());
+        player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "You enabled flying in " + ChatColor.GOLD + "0.1" + ChatColor.GREEN + " speed !");
 
         return true;
     }
