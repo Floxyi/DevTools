@@ -48,7 +48,12 @@ public class FlyCommand implements TabExecutor {
         }
 
         player.setAllowFlight(!player.getAllowFlight());
-        player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "You enabled flying in " + ChatColor.GOLD + "0.1" + ChatColor.GREEN + " speed !");
+
+        if(player.getAllowFlight()) {
+            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "You enabled flying in " + ChatColor.GOLD + "0.1" + ChatColor.GREEN + " speed !");
+        } else {
+            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "You disabled flying!");
+        }
 
         return true;
     }
