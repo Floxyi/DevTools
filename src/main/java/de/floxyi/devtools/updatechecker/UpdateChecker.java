@@ -34,11 +34,11 @@ public class UpdateChecker implements Runnable {
         scanner.close();
 
         latest = inLine.substring(0, inLine.length() - 10);
-        Bukkit.getLogger().log(Level.WARNING, Devtools.getPrefix() + "Latest plugin version is " + latest + ".");
+        Bukkit.getLogger().log(Level.INFO, Devtools.getPrefix() + "Latest plugin version is " + latest + ".");
 
         upToDate = getClass().getPackage().getImplementationVersion().equals(latest);
         if (upToDate) {
-            Bukkit.getLogger().log(Level.WARNING, Devtools.getPrefix() + "Plugin is on the newest version!");
+            Bukkit.getLogger().log(Level.INFO, Devtools.getPrefix() + "Plugin is on the newest version!");
         } else {
             Bukkit.getLogger().log(Level.WARNING, Devtools.getPrefix() + "Plugin is out of date (" + getCurrentVersion() + "/" + latest + ")! Please update from: https://www.spigotmc.org/resources/devtools.96876/");
         }
