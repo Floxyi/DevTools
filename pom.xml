@@ -6,7 +6,7 @@
 
     <groupId>de.floxyi</groupId>
     <artifactId>DevTools</artifactId>
-    <version>1.3.1</version>
+    <version>1.4.0</version>
     <packaging>jar</packaging>
 
     <name>DevTools</name>
