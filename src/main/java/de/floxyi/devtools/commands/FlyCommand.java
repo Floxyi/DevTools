@@ -2,6 +2,7 @@ package de.floxyi.devtools.commands;
 
 import de.floxyi.devtools.Devtools;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -47,13 +48,23 @@ public class FlyCommand implements TabExecutor {
             return true;
         }
 
-        player.setAllowFlight(!player.getAllowFlight());
 
-        if(player.getAllowFlight()) {
-            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "You enabled flying in " + ChatColor.GOLD + "0.1" + ChatColor.GREEN + " speed !");
-        } else {
-            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "You disabled flying!");
+        if(player.getGameMode() == GameMode.SURVIVAL) {
+            player.setAllowFlight(!player.getAllowFlight());
+            player.setFlySpeed(0.1f);
+
+            if(player.getAllowFlight()) {
+                player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "You enabled flying in " + ChatColor.GOLD + "0.1" + ChatColor.GREEN + " speed !");
+            } else {
+                player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "You disabled flying!");
+            }
+            return true;
         }
+
+        player.setFlySpeed(0.1f);
+        player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "You set your flying speed to " + ChatColor.GOLD + "0.1" + ChatColor.GREEN + "!");
+
+
 
         return true;
     }
