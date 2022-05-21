@@ -57,10 +57,10 @@ public final class Devtools extends JavaPlugin {
     }
 
     private void commandRegistration() {
-        Objects.requireNonNull(getCommand("location")).setExecutor(new LocationCommand());
-        Objects.requireNonNull(getCommand("sound")).setExecutor(new SoundCommand());
         Objects.requireNonNull(getCommand("fly")).setExecutor(new FlyCommand());
+        Objects.requireNonNull(getCommand("location")).setExecutor(new LocationCommand());
         Objects.requireNonNull(getCommand("material")).setExecutor(new MaterialCommand());
+        Objects.requireNonNull(getCommand("sound")).setExecutor(new SoundCommand());
     }
 
     private void listenerRegistration() {

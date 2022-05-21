@@ -14,7 +14,9 @@ public class UpdateChecker implements Runnable {
     private static String latest;
 
     public void run() {
+
         InputStream in;
+
         try {
             in = new URL("https://raw.githubusercontent.com/Floxyi/DevTools/master/pom.xml").openStream();
         } catch (IOException e) {

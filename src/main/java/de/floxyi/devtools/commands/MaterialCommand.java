@@ -43,18 +43,29 @@ public class MaterialCommand implements TabExecutor {
             return false;
         }
 
-        constructItem(itemStack, itemMeta);
+        generateCode(itemStack, itemMeta);
         sendItemInfo(player, itemStack, itemMeta);
 
-        return false;
+        return true;
     }
 
-    private void constructItem(ItemStack itemStack, ItemMeta itemMeta) {
+    @Nullable
+    @Override
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        return new ArrayList<>();
+    }
+
+    private void generateCode(ItemStack itemStack, ItemMeta itemMeta) {
         Bukkit.getLogger().info("ItemStack itemStack = new ItemStack(Material." + itemStack.getType() + ");");
         Bukkit.getLogger().info("itemStack.setAmount(" + itemStack.getAmount() + ");");
 
-        if(itemMeta.hasDisplayName()) Bukkit.getLogger().info("itemStack.getItemMeta().setDisplayName(" + itemMeta.getDisplayName() + ");");
-        if(itemMeta.hasLore()) Bukkit.getLogger().info("itemStack.getItemMeta().setLore(" + itemMeta.getLore() + ");");
+        if(itemMeta.hasDisplayName()) {
+            Bukkit.getLogger().info("itemStack.getItemMeta().setDisplayName(" + itemMeta.getDisplayName() + ");");
+        }
+
+        if(itemMeta.hasLore()) {
+            Bukkit.getLogger().info("itemStack.getItemMeta().setLore(" + itemMeta.getLore() + ");");
+        }
 
         if(itemMeta instanceof Damageable damageable) {
             Bukkit.getLogger().info("Damageable damageable = (Damageable) itemStack.getItemMeta();");
@@ -101,25 +112,33 @@ public class MaterialCommand implements TabExecutor {
     private void sendItemInfo(Player player, ItemStack itemStack, ItemMeta itemMeta) {
         player.sendMessage(Devtools.getPrefix() + ChatColor.AQUA + generateItemName(itemStack.getType()) + ChatColor.GRAY + " (detected properties):");
 
+        if(itemMeta.hasDisplayName()) {
+            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The item's custom name: " + ChatColor.GOLD + itemMeta.getDisplayName());
+        }
+
         player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The item's material type: " + ChatColor.GOLD + itemStack.getType());
-
-        if(itemMeta.hasDisplayName()) player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The item's custom name: " + ChatColor.GOLD + itemMeta.getDisplayName());
-
-        if(itemMeta.hasLore()) player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The item's lore: " + ChatColor.GOLD + itemMeta.getLore());
 
         player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The item's amount: " + ChatColor.GOLD + itemStack.getAmount() + "/" + itemStack.getMaxStackSize());
 
-        if(itemMeta instanceof Damageable damageable) player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The item's durability: " + ChatColor.GOLD + (itemStack.getType().getMaxDurability() - damageable.getDamage()) + "/" + itemStack.getType().getMaxDurability());
+        if(itemMeta instanceof Damageable damageable) {
+            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The item's durability: " + ChatColor.GOLD + (itemStack.getType().getMaxDurability() - damageable.getDamage()) + "/" + itemStack.getType().getMaxDurability());
+        }
 
         if(itemMeta.hasEnchants()) {
             player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The item's enchantments:");
+
             Map<Enchantment, Integer> enchantments = itemMeta.getEnchants();
 
             for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
                 String enchantmentName = entry.getKey().getKey().getKey();
                 enchantmentName = enchantmentName.substring(0, 1).toUpperCase() + enchantmentName.substring(1);
+
                 player.sendMessage(Devtools.getPrefix() + ChatColor.GRAY + "- " + ChatColor.GREEN + enchantmentName + ": " + ChatColor.GOLD + entry.getValue().toString());
             }
+        }
+
+        if(itemMeta.hasLore()) {
+            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The item's lore: " + ChatColor.GOLD + itemMeta.getLore());
         }
     }
 
@@ -138,11 +157,5 @@ public class MaterialCommand implements TabExecutor {
         itemName = itemName.substring(0, itemName.length() - 1);
 
         return itemName;
-    }
-
-    @Nullable
-    @Override
-    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        return new ArrayList<>();
     }
 }
