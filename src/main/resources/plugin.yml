@@ -12,3 +12,5 @@ commands:
     description: Plays the specified sound in a custom volume and pitch (/sound "sound name" <volume pitch>)
   fly:
     description: Allows the player to fly in a specified speed (/fly "speed")
+  material:
+    description: Get the creation code of the item you are currently holding in your main hand.

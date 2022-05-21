@@ -2,6 +2,7 @@ package de.floxyi.devtools;
 
 import de.floxyi.devtools.commands.FlyCommand;
 import de.floxyi.devtools.commands.LocationCommand;
+import de.floxyi.devtools.commands.MaterialCommand;
 import de.floxyi.devtools.commands.SoundCommand;
 import de.floxyi.devtools.updatechecker.JoinListener;
 import de.floxyi.devtools.updatechecker.UpdateChecker;
@@ -37,7 +38,7 @@ public final class Devtools extends JavaPlugin {
         Bukkit.getLogger().info(getPrefix() + "                             by Floxyii");
         Bukkit.getLogger().info(getPrefix() + "");
 
-        Thread updateCheck = new Thread(updateChecker, "Update Check");
+        Thread updateCheck = new Thread(updateChecker);
         updateCheck.start();
 
         Bukkit.getLogger().info(getPrefix() + "Plugin is getting activated!");
@@ -59,6 +60,7 @@ public final class Devtools extends JavaPlugin {
         Objects.requireNonNull(getCommand("location")).setExecutor(new LocationCommand());
         Objects.requireNonNull(getCommand("sound")).setExecutor(new SoundCommand());
         Objects.requireNonNull(getCommand("fly")).setExecutor(new FlyCommand());
+        Objects.requireNonNull(getCommand("material")).setExecutor(new MaterialCommand());
     }
 
     private void listenerRegistration() {

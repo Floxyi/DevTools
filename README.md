@@ -39,5 +39,10 @@ Whenever you need to fly faster than in normal survival or you need to fly in su
 - **Note**: You can also type in a flying speed (0.1 - 1.0).
 
 
+## 4. Feature: Material
+
+Whenever you need to code a specific item, just build it in Minecraft, do the command and boom you just got the code for it.  
+**/material**
+
 DevTools was made by [Floxyi](https://twitter.com/Floxyi1) with ❤️.  
 DevTools has its own [**bStats**](https://bstats.org/plugin/bukkit/DevTools/13046) site.
