@@ -1,7 +1,6 @@
 package de.floxyi.devtools.commands;
 
 import de.floxyi.devtools.Devtools;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -15,10 +14,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class MaterialCommand implements TabExecutor {
 
@@ -43,8 +43,9 @@ public class MaterialCommand implements TabExecutor {
             return false;
         }
 
-        generateCode(itemStack, itemMeta);
         sendItemInfo(player, itemStack, itemMeta);
+        String generateCodeFile = generateCodeFile(itemStack, itemMeta);
+        player.sendMessage(Devtools.getPrefix() + ChatColor.AQUA + generateCodeFile);
 
         return true;
     }
@@ -55,34 +56,65 @@ public class MaterialCommand implements TabExecutor {
         return new ArrayList<>();
     }
 
-    private void generateCode(ItemStack itemStack, ItemMeta itemMeta) {
-        Bukkit.getLogger().info("ItemStack itemStack = new ItemStack(Material." + itemStack.getType() + ");");
-        Bukkit.getLogger().info("itemStack.setAmount(" + itemStack.getAmount() + ");");
-
-        if(itemMeta.hasDisplayName()) {
-            Bukkit.getLogger().info("itemStack.getItemMeta().setDisplayName(" + itemMeta.getDisplayName() + ");");
+    private String generateCodeFile(ItemStack itemStack, ItemMeta itemMeta) {
+        File dir = new File(String.valueOf(Devtools.getPlugin().getDataFolder()));
+        if(!dir.exists() && !dir.mkdirs()) {
+            return "Code file cannot be created!";
         }
 
-        if(itemMeta.hasLore()) {
-            Bukkit.getLogger().info("itemStack.getItemMeta().setLore(" + itemMeta.getLore() + ");");
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ssL-SSS");
+
+        String fileName = generateItemName(itemStack.getType()) + " " + sdf.format(date) + ".txt";
+        File file = new File(dir.getPath(), fileName);
+
+        if(!file.exists()) {
+            try {
+                if(!file.createNewFile()) {
+                    return "Code file cannot be created!";
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
-        if(itemMeta instanceof Damageable damageable) {
-            Bukkit.getLogger().info("Damageable damageable = (Damageable) itemStack.getItemMeta();");
-            Bukkit.getLogger().info("damageable.setDamage(" + damageable.getDamage() + ");");
-            Bukkit.getLogger().info("itemStack.setItemMeta(damageable);");
-        }
+        try {
+            FileWriter myWriter = new FileWriter(file.getPath());
 
-        if(itemMeta.hasEnchants()) {
-            Bukkit.getLogger().info("ItemMeta itemMeta = itemStack.getItemMeta();");
+            myWriter.write("ItemStack itemStack = new ItemStack(Material." + itemStack.getType() + ");\n");
+            myWriter.write("itemStack.setAmount(" + itemStack.getAmount() + ");\n");
 
-            Map<Enchantment, Integer> enchantments = itemMeta.getEnchants();
-            for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-                String enchantment = enchantmentTranslator(entry.getKey().getKey().getKey().toUpperCase(Locale.ROOT));
-                Bukkit.getLogger().info("itemMeta.addEnchant(Enchantment." + enchantment + ", " + entry.getValue().toString() + ", false);");
+            if(itemMeta.hasDisplayName()) {
+                myWriter.write("itemStack.getItemMeta().setDisplayName(" + itemMeta.getDisplayName() + ");\n");
             }
 
-            Bukkit.getLogger().info("itemStack.setItemMeta(itemMeta);");
+            if(itemMeta.hasLore()) {
+                myWriter.write("itemStack.getItemMeta().setLore(" + itemMeta.getLore() + ");\n");
+            }
+
+            Damageable damageable = (Damageable) itemMeta;
+            if(damageable.getDamage() != 0) {
+                myWriter.write("Damageable damageable = (Damageable) itemStack.getItemMeta();\n");
+                myWriter.write("damageable.setDamage(" + damageable.getDamage() + ");\n");
+                myWriter.write("itemStack.setItemMeta(damageable);\n");
+            }
+
+            if(itemMeta.hasEnchants()) {
+                myWriter.write("ItemMeta itemMeta = itemStack.getItemMeta();\n");
+
+                Map<Enchantment, Integer> enchantments = itemMeta.getEnchants();
+                for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+                    String enchantment = enchantmentTranslator(entry.getKey().getKey().getKey().toUpperCase(Locale.ROOT));
+                    myWriter.write("itemMeta.addEnchant(Enchantment." + enchantment + ", " + entry.getValue().toString() + ", false);\n");
+                }
+
+                myWriter.write("itemStack.setItemMeta(itemMeta);\n");
+            }
+
+            myWriter.close();
+            return "Successfully created code file.";
+        } catch (IOException e) {
+            return "Code file cannot be written to!";
         }
     }
 
@@ -120,7 +152,8 @@ public class MaterialCommand implements TabExecutor {
 
         player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The item's amount: " + ChatColor.GOLD + itemStack.getAmount() + "/" + itemStack.getMaxStackSize());
 
-        if(itemMeta instanceof Damageable damageable) {
+        Damageable damageable = (Damageable) itemMeta;
+        if(damageable.getDamage() != 0) {
             player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The item's durability: " + ChatColor.GOLD + (itemStack.getType().getMaxDurability() - damageable.getDamage()) + "/" + itemStack.getType().getMaxDurability());
         }
 
