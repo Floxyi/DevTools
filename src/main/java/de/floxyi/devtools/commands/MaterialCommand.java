@@ -128,11 +128,14 @@ public class MaterialCommand implements TabExecutor {
     private void sendPathMessage(Player player, File file) {
         String path = System.getProperty("user.dir") + "\\" + file.getPath();
 
-        TextComponent message = new TextComponent(Devtools.getPrefix() + "[" + ChatColor.AQUA + "Get path" + ChatColor.GRAY + "]" + ChatColor.RESET + ChatColor.GREEN + " Click to get the local file path!");
-        message.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, path));
-        message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("If you are running a local testing server you can click to copy the file path!")));
+        TextComponent prefix = new TextComponent(Devtools.getPrefix());
+        TextComponent message = new TextComponent(ChatColor.GREEN + " Click to get the local file path!");
+        TextComponent copy = new TextComponent("[" + ChatColor.AQUA + "copy path to clipboard" + ChatColor.GRAY + "]" + ChatColor.RESET);
+        copy.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, path));
+        copy.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("If you are running a local testing server you can click to copy the file path!")));
 
-        player.spigot().sendMessage(message);
+        TextComponent combinedMessage = new TextComponent(prefix, copy, message);
+        player.spigot().sendMessage(combinedMessage);
     }
 
     private String enchantmentTranslator(String enchantment) {
