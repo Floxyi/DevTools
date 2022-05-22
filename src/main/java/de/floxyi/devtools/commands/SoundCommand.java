@@ -89,7 +89,7 @@ public class SoundCommand implements TabExecutor {
         return Collections.emptyList();
     }
 
-    public void sendReplayMessage(Player player, String s, String[] args) {
+    private void sendReplayMessage(Player player, String s, String[] args) {
         String commandLine = "/" + s;
         for(String arg : Arrays.stream(args).toList()) {
             commandLine = commandLine.concat(" " + arg);

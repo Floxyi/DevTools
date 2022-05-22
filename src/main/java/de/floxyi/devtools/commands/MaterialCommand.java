@@ -1,6 +1,10 @@
 package de.floxyi.devtools.commands;
 
 import de.floxyi.devtools.Devtools;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -14,9 +18,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -44,9 +46,15 @@ public class MaterialCommand implements TabExecutor {
         }
 
         sendItemInfo(player, itemStack, itemMeta);
-        String generateCodeFile = generateCodeFile(itemStack, itemMeta);
-        player.sendMessage(Devtools.getPrefix() + ChatColor.AQUA + generateCodeFile);
 
+        File codeFile = generateCodeFile(itemStack, itemMeta);
+        if(codeFile == null) {
+            player.sendMessage(Devtools.getPrefix() + ChatColor.RED + "Code file cannot be created!");
+            return false;
+        }
+
+        player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + ChatColor.GREEN + "Successfully created code file in the plugin's folder!");
+        sendPathMessage(player, codeFile);
         return true;
     }
 
@@ -56,10 +64,10 @@ public class MaterialCommand implements TabExecutor {
         return new ArrayList<>();
     }
 
-    private String generateCodeFile(ItemStack itemStack, ItemMeta itemMeta) {
-        File dir = new File(String.valueOf(Devtools.getPlugin().getDataFolder()));
+    private File generateCodeFile(ItemStack itemStack, ItemMeta itemMeta) {
+        File dir = new File(Devtools.getPlugin().getDataFolder() + "\\itemCode");
         if(!dir.exists() && !dir.mkdirs()) {
-            return "Code file cannot be created!";
+            return null;
         }
 
         Date date = new Date();
@@ -68,14 +76,12 @@ public class MaterialCommand implements TabExecutor {
         String fileName = generateItemName(itemStack.getType()) + " " + sdf.format(date) + ".txt";
         File file = new File(dir.getPath(), fileName);
 
-        if(!file.exists()) {
-            try {
-                if(!file.createNewFile()) {
-                    return "Code file cannot be created!";
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+        try {
+            if(!file.createNewFile()) {
+                return null;
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         try {
@@ -112,10 +118,21 @@ public class MaterialCommand implements TabExecutor {
             }
 
             myWriter.close();
-            return "Successfully created code file.";
+
+            return file;
         } catch (IOException e) {
-            return "Code file cannot be written to!";
+            return null;
         }
+    }
+
+    private void sendPathMessage(Player player, File file) {
+        String path = System.getProperty("user.dir") + "\\" + file.getPath();
+
+        TextComponent message = new TextComponent(Devtools.getPrefix() + "[" + ChatColor.AQUA + "Get path" + ChatColor.GRAY + "]" + ChatColor.RESET + ChatColor.GREEN + " Click to get the local file path!");
+        message.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, path));
+        message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("If you are running a local testing server you can click to copy the file path!")));
+
+        player.spigot().sendMessage(message);
     }
 
     private String enchantmentTranslator(String enchantment) {
@@ -166,7 +183,7 @@ public class MaterialCommand implements TabExecutor {
                 String enchantmentName = entry.getKey().getKey().getKey();
                 enchantmentName = enchantmentName.substring(0, 1).toUpperCase() + enchantmentName.substring(1);
 
-                player.sendMessage(Devtools.getPrefix() + ChatColor.GRAY + "- " + ChatColor.GREEN + enchantmentName + ": " + ChatColor.GOLD + entry.getValue().toString());
+                player.sendMessage(Devtools.getPrefix() + ChatColor.GRAY + "  - " + ChatColor.GREEN + enchantmentName + ": " + ChatColor.GOLD + entry.getValue().toString());
             }
         }
 
