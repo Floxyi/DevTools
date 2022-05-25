@@ -21,8 +21,181 @@ import java.util.Objects;
 
 public class ItemAnalyzer {
 
-    public String generateItemName(Material material) {
-        String materialName = material.toString();
+    private final ItemStack itemStack;
+    private final ItemMeta itemMeta;
+
+    public ItemAnalyzer(ItemStack itemStack) {
+        this.itemStack = itemStack;
+        itemMeta = itemStack.getItemMeta();
+    }
+
+    public void sendItemInfo(Player player) {
+        player.sendMessage(Devtools.getPrefix() + ChatColor.AQUA + generateItemName() + ChatColor.GRAY + " (supported properties):");
+
+        sendGeneralMeta(player);
+        sendEnchantmentMeta(player);
+        sendBookMeta(player);
+    }
+
+    private void sendGeneralMeta(Player player) {
+        if(itemMeta.hasDisplayName()) {
+            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The item's custom name: " + ChatColor.GOLD + itemMeta.getDisplayName());
+        }
+
+        player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The item's material type: " + ChatColor.GOLD + itemStack.getType());
+
+        if(itemStack.getMaxStackSize() != 1) {
+            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The item's amount: " + ChatColor.GOLD + itemStack.getAmount() + "/" + itemStack.getMaxStackSize());
+        }
+
+        if(itemMeta.hasLore()) {
+            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The item's lore: " + ChatColor.GOLD + itemMeta.getLore());
+        }
+
+        Damageable damageable = (Damageable) itemMeta;
+        if(damageable.getDamage() != 0) {
+            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The item's durability: " + ChatColor.GOLD + (itemStack.getType().getMaxDurability() - damageable.getDamage()) + "/" + itemStack.getType().getMaxDurability());
+        }
+    }
+
+    private void sendEnchantmentMeta(Player player) {
+        if(itemMeta.hasEnchants()) {
+            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The item's enchantments:");
+
+            Map<Enchantment, Integer> enchantments = itemMeta.getEnchants();
+            for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+                String enchantmentName = entry.getKey().getKey().getKey();
+                enchantmentName = enchantmentName.substring(0, 1).toUpperCase() + enchantmentName.substring(1);
+
+                player.sendMessage(Devtools.getPrefix() + ChatColor.GRAY + "  - " + ChatColor.GREEN + enchantmentName + ": " + ChatColor.GOLD + entry.getValue().toString());
+            }
+        }
+    }
+
+    private void sendBookMeta(Player player) {
+        if(itemStack.getType() == Material.WRITTEN_BOOK || itemStack.getType() == Material.WRITABLE_BOOK) {
+            BookMeta bookMeta = (BookMeta) itemMeta;
+
+            if(bookMeta.hasTitle()) {
+                player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The book's title: " + ChatColor.GOLD + bookMeta.getTitle());
+            }
+            if(bookMeta.hasAuthor()) {
+                player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The book's author: " + ChatColor.GOLD + bookMeta.getAuthor());
+            }
+            if(bookMeta.hasPages()) {
+                player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The book's pages: " + ChatColor.GOLD + bookMeta.getPageCount());
+            }
+            if(bookMeta.hasGeneration()) {
+                player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The book's generation: " + ChatColor.GOLD + Objects.requireNonNull(bookMeta.getGeneration()));
+            }
+        }
+    }
+
+
+    public File generateItemCodeFile() {
+        File fileDirectory = new File(Devtools.getPlugin().getDataFolder() + "\\itemCode");
+        if(!fileDirectory.exists() && !fileDirectory.mkdirs()) {
+            return null;
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ssL-SSS");
+        String fileName = generateItemName() + " " + sdf.format(new Date()) + ".txt";
+
+        File file = new File(fileDirectory.getPath(), fileName);
+
+        try {
+            if(!file.createNewFile()) {
+                return null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            FileWriter myWriter = new FileWriter(file.getPath());
+
+            writeGeneralMeta(myWriter);
+            writeEnchantmentMeta(myWriter);
+            writeBookMeta(myWriter);
+
+            myWriter.close();
+
+            return file;
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    private void writeGeneralMeta(FileWriter myWriter) throws IOException {
+        myWriter.write("ItemStack itemStack = new ItemStack(Material." + itemStack.getType() + ");\n");
+        myWriter.write("ItemMeta itemMeta = itemStack.getItemMeta(); // can be removed if not needed\n");
+        myWriter.write("itemStack.setAmount(" + itemStack.getAmount() + ");\n");
+
+        if(itemMeta.hasDisplayName()) {
+            myWriter.write("itemStack.getItemMeta().setDisplayName(" + itemMeta.getDisplayName() + ");\n");
+        }
+
+        if(itemMeta.hasLore()) {
+            myWriter.write("itemStack.getItemMeta().setLore(" + itemMeta.getLore() + ");\n");
+        }
+
+        Damageable damageable = (Damageable) itemMeta;
+        if(damageable.getDamage() != 0) {
+            myWriter.write("Damageable damageable = (Damageable) itemStack.getItemMeta();\n");
+            myWriter.write("damageable.setDamage(" + damageable.getDamage() + ");\n");
+            myWriter.write("itemStack.setItemMeta(damageable);\n");
+        }
+    }
+
+    private void writeEnchantmentMeta(FileWriter myWriter) throws IOException {
+        if(itemMeta.hasEnchants()) {
+
+            Map<Enchantment, Integer> enchantments = itemMeta.getEnchants();
+            for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+                String enchantment = enchantmentTranslator(entry.getKey().getKey().getKey().toUpperCase(Locale.ROOT));
+                myWriter.write("itemMeta.addEnchant(Enchantment." + enchantment + ", " + entry.getValue().toString() + ", false);\n");
+            }
+
+            myWriter.write("itemStack.setItemMeta(itemMeta);\n");
+        }
+    }
+
+    private void writeBookMeta(FileWriter myWriter) throws IOException {
+        if(itemStack.getType() == Material.WRITTEN_BOOK || itemStack.getType() == Material.WRITABLE_BOOK) {
+            BookMeta bookMeta = (BookMeta) itemStack.getItemMeta();
+            if(bookMeta == null) return;
+
+            myWriter.write("BookMeta bookMeta = (BookMeta) itemMeta;\n");
+
+            if(bookMeta.hasTitle()) {
+                myWriter.write("bookMeta.setTitle(\"" + bookMeta.getTitle() + "\");\n");
+            }
+
+            if(bookMeta.hasAuthor()) {
+                myWriter.write("bookMeta.setAuthor(\"" + bookMeta.getAuthor() + "\");\n");
+            }
+
+            if(bookMeta.hasPages()) {
+                myWriter.write("ArrayList<String> pages = new ArrayList<>();\n");
+
+                for(int i = 1; i <= bookMeta.getPageCount(); i++) {
+                    myWriter.write("pages.add(\"" + bookMeta.getPage(i) + "\");\n");
+                }
+
+                myWriter.write("bookMeta.setPages(pages);\n");
+            }
+
+            if(bookMeta.hasGeneration()) {
+                myWriter.write("bookMeta.setGeneration(" +  bookMeta.getGeneration() +"));\n");
+            }
+
+            myWriter.write("itemStack.setItemMeta(bookMeta);\n");
+        }
+    }
+
+
+    private String generateItemName() {
+        String materialName = itemStack.getType().toString();
         materialName = materialName.toLowerCase();
 
         String itemName = "";
@@ -38,7 +211,7 @@ public class ItemAnalyzer {
         return itemName;
     }
 
-    public String enchantmentTranslator(String enchantment) {
+    private String enchantmentTranslator(String enchantment) {
         if(enchantment.equals("FLAME")) enchantment = "ARROW_FIRE";
         if(enchantment.equals("POWER")) enchantment = "ARROW_DAMAGE";
         if(enchantment.equals("RESPIRATION")) enchantment = "OXYGEN";
@@ -58,155 +231,5 @@ public class ItemAnalyzer {
         if(enchantment.equals("BLAST_PROTECTION")) enchantment = "PROTECTION_EXPLOSIONS";
         if(enchantment.equals("PROJECTILE_PROTECTION")) enchantment = "PROTECTION_PROJECTILE";
         return enchantment;
-    }
-
-    public void sendItemInfo(Player player, ItemStack itemStack, ItemMeta itemMeta) {
-        player.sendMessage(Devtools.getPrefix() + ChatColor.AQUA + generateItemName(itemStack.getType()) + ChatColor.GRAY + " (supported properties):");
-
-        if(itemMeta.hasDisplayName()) {
-            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The item's custom name: " + ChatColor.GOLD + itemMeta.getDisplayName());
-        }
-
-        player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The item's material type: " + ChatColor.GOLD + itemStack.getType());
-
-        if(itemStack.getMaxStackSize() != 1) {
-            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The item's amount: " + ChatColor.GOLD + itemStack.getAmount() + "/" + itemStack.getMaxStackSize());
-        }
-
-        if(itemMeta.hasLore()) {
-            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The item's lore: " + ChatColor.GOLD + itemMeta.getLore());
-        }
-
-        Damageable damageable = (Damageable) itemMeta;
-        if(damageable.getDamage() != 0) {
-            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The item's durability: " + ChatColor.GOLD + (itemStack.getType().getMaxDurability() - damageable.getDamage()) + "/" + itemStack.getType().getMaxDurability());
-        }
-
-        if(itemMeta.hasEnchants()) {
-            player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The item's enchantments:");
-
-            Map<Enchantment, Integer> enchantments = itemMeta.getEnchants();
-
-            for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-                String enchantmentName = entry.getKey().getKey().getKey();
-                enchantmentName = enchantmentName.substring(0, 1).toUpperCase() + enchantmentName.substring(1);
-
-                player.sendMessage(Devtools.getPrefix() + ChatColor.GRAY + "  - " + ChatColor.GREEN + enchantmentName + ": " + ChatColor.GOLD + entry.getValue().toString());
-            }
-        }
-
-        if(itemStack.getType() == Material.WRITTEN_BOOK || itemStack.getType() == Material.WRITABLE_BOOK) {
-            BookMeta bookMeta = (BookMeta) itemMeta;
-
-            if(bookMeta.hasTitle()) {
-                player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The book's title: " + ChatColor.GOLD + bookMeta.getTitle());
-            }
-            if(bookMeta.hasAuthor()) {
-                player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The book's author: " + ChatColor.GOLD + bookMeta.getAuthor());
-            }
-            if(bookMeta.hasPages()) {
-                player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The book's pages: " + ChatColor.GOLD + bookMeta.getPageCount());
-            }
-            if(bookMeta.hasGeneration()) {
-                player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The book's generation: " + ChatColor.GOLD + Objects.requireNonNull(bookMeta.getGeneration()));
-            }
-        }
-    }
-
-    public File generateItemCodeFile(ItemStack itemStack, ItemMeta itemMeta) {
-        File dir = new File(Devtools.getPlugin().getDataFolder() + "\\itemCode");
-        if(!dir.exists() && !dir.mkdirs()) {
-            return null;
-        }
-
-        Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ssL-SSS");
-
-        String fileName = generateItemName(itemStack.getType()) + " " + sdf.format(date) + ".txt";
-        File file = new File(dir.getPath(), fileName);
-
-        try {
-            if(!file.createNewFile()) {
-                return null;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            boolean declaredItemMeta = false;
-
-            FileWriter myWriter = new FileWriter(file.getPath());
-
-            myWriter.write("ItemStack itemStack = new ItemStack(Material." + itemStack.getType() + ");\n");
-            myWriter.write("itemStack.setAmount(" + itemStack.getAmount() + ");\n");
-
-            if(itemMeta.hasDisplayName()) {
-                myWriter.write("itemStack.getItemMeta().setDisplayName(" + itemMeta.getDisplayName() + ");\n");
-            }
-
-            if(itemMeta.hasLore()) {
-                myWriter.write("itemStack.getItemMeta().setLore(" + itemMeta.getLore() + ");\n");
-            }
-
-            Damageable damageable = (Damageable) itemMeta;
-            if(damageable.getDamage() != 0) {
-                myWriter.write("Damageable damageable = (Damageable) itemStack.getItemMeta();\n");
-                myWriter.write("damageable.setDamage(" + damageable.getDamage() + ");\n");
-                myWriter.write("itemStack.setItemMeta(damageable);\n");
-            }
-
-            if(itemMeta.hasEnchants()) {
-                myWriter.write("ItemMeta itemMeta = itemStack.getItemMeta();\n");
-                declaredItemMeta = true;
-
-                Map<Enchantment, Integer> enchantments = itemMeta.getEnchants();
-                for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-                    String enchantment = enchantmentTranslator(entry.getKey().getKey().getKey().toUpperCase(Locale.ROOT));
-                    myWriter.write("itemMeta.addEnchant(Enchantment." + enchantment + ", " + entry.getValue().toString() + ", false);\n");
-                }
-
-                myWriter.write("itemStack.setItemMeta(itemMeta);\n");
-            }
-
-            if(itemStack.getType() == Material.WRITTEN_BOOK || itemStack.getType() == Material.WRITABLE_BOOK) {
-                BookMeta bookMeta = (BookMeta) itemMeta;
-
-                if(declaredItemMeta) {
-                    myWriter.write("BookMeta bookMeta = (BookMeta) itemMeta;\n");
-                } else {
-                    myWriter.write("BookMeta bookMeta = (BookMeta) itemStack.getItemMeta();\n");
-                }
-
-                if(bookMeta.hasTitle()) {
-                    myWriter.write("bookMeta.setTitle(\"" + bookMeta.getTitle() + "\");\n");
-                }
-
-                if(bookMeta.hasAuthor()) {
-                    myWriter.write("bookMeta.setAuthor(\"" + bookMeta.getAuthor() + "\");\n");
-                }
-
-                if(bookMeta.hasPages()) {
-                    myWriter.write("ArrayList<String> pages = new ArrayList<>();\n");
-
-                    for(int i = 1; i <= bookMeta.getPageCount(); i++) {
-                        myWriter.write("pages.add(\"" + bookMeta.getPage(i) + "\");\n");
-                    }
-
-                    myWriter.write("bookMeta.setPages(pages);\n");
-                }
-
-                if(bookMeta.hasGeneration()) {
-                    myWriter.write("bookMeta.setGeneration(" +  bookMeta.getGeneration() +"));\n");
-                }
-
-                myWriter.write("itemStack.setItemMeta(bookMeta);\n");
-            }
-
-            myWriter.close();
-            return file;
-        } catch (IOException e) {
-            return null;
-        }
     }
 }

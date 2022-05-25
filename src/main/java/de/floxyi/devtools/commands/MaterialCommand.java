@@ -11,8 +11,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,13 +38,11 @@ public class MaterialCommand implements TabExecutor {
             return false;
         }
 
-        ItemStack itemStack = player.getInventory().getItemInMainHand();
-        ItemMeta itemMeta = itemStack.getItemMeta();
+        ItemAnalyzer itemAnalyzer = new ItemAnalyzer(player.getInventory().getItemInMainHand());
 
-        ItemAnalyzer itemAnalyzer = new ItemAnalyzer();
-        itemAnalyzer.sendItemInfo(player, itemStack, itemMeta);
+        itemAnalyzer.sendItemInfo(player);
+        File codeFile = itemAnalyzer.generateItemCodeFile();
 
-        File codeFile = itemAnalyzer.generateItemCodeFile(itemStack, itemMeta);
         if(codeFile == null) {
             player.sendMessage(Devtools.getPrefix() + ChatColor.RED + "Code file cannot be created!");
             return false;
