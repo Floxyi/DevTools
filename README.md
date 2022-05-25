@@ -41,6 +41,7 @@ Whenever you need to create a specific item inside your code, just get it in Min
 
 - When executing this command a .txt file is getting created containing the necessary code.
 - **Note**: You can find this code in "%server%/plugins/Devtools/itemCode"
+- This feature is experimental, meaning not all properties of all items are supported
 
 DevTools was made by [Floxyi](https://twitter.com/Floxyi1) with ❤️.  
 DevTools has its own [**bStats**](https://bstats.org/plugin/bukkit/DevTools/13046) site.
