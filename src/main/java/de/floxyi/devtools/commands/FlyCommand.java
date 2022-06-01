@@ -64,8 +64,6 @@ public class FlyCommand implements TabExecutor {
         player.setFlySpeed(0.1f);
         player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "You set your flying speed to " + ChatColor.GOLD + "0.1" + ChatColor.GREEN + "!");
 
-
-
         return true;
     }
 

@@ -31,7 +31,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.2.0</version>
                 <configuration>
-                    <outputDirectory>/Users/florian/Documents/MinecraftServers/Paper_1182/plugins</outputDirectory>
+                    <outputDirectory>D:\Minecraft_Servers\Paper_1182\plugins</outputDirectory>
                     <archive>
                         <manifest>
                             <mainClass>test.App</mainClass>

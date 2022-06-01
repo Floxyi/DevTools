@@ -14,7 +14,9 @@ public class UpdateChecker implements Runnable {
     private static String latest;
 
     public void run() {
+
         InputStream in;
+
         try {
             in = new URL("https://raw.githubusercontent.com/Floxyi/DevTools/master/pom.xml").openStream();
         } catch (IOException e) {
@@ -34,14 +36,22 @@ public class UpdateChecker implements Runnable {
         scanner.close();
 
         latest = inLine.substring(0, inLine.length() - 10);
-        Bukkit.getLogger().log(Level.INFO, Devtools.getPrefix() + "Latest plugin version is " + latest + ".");
+        upToDate = compareVersion(getClass().getPackage().getImplementationVersion(), latest);
 
-        upToDate = getClass().getPackage().getImplementationVersion().equals(latest);
-        if (upToDate) {
-            Bukkit.getLogger().log(Level.INFO, Devtools.getPrefix() + "Plugin is on the newest version!");
+        if(upToDate) {
+            Bukkit.getLogger().log(Level.INFO, Devtools.getPrefix() + "You are running on the newest version!");
         } else {
             Bukkit.getLogger().log(Level.WARNING, Devtools.getPrefix() + "Plugin is out of date (" + getCurrentVersion() + "/" + latest + ")! Please update from: https://www.spigotmc.org/resources/devtools.96876/");
         }
+    }
+
+    private boolean compareVersion(String version, String newest) {
+        version = version.replace(".", "");
+        newest = newest.replace(".", "");
+        int versionNumber = Integer.parseInt(version);
+        int newestNumber = Integer.parseInt(newest);
+
+        return versionNumber >= newestNumber;
     }
 
     public boolean isNewestVersion() {

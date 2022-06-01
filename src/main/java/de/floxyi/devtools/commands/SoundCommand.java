@@ -89,16 +89,19 @@ public class SoundCommand implements TabExecutor {
         return Collections.emptyList();
     }
 
-    public void sendReplayMessage(Player player, String s, String[] args) {
+    private void sendReplayMessage(Player player, String s, String[] args) {
         String commandLine = "/" + s;
         for(String arg : Arrays.stream(args).toList()) {
             commandLine = commandLine.concat(" " + arg);
         }
 
-        TextComponent message = new TextComponent(Devtools.getPrefix() + "[" + ChatColor.AQUA + "Play again" + ChatColor.GRAY + "]" + ChatColor.RESET + ChatColor.GREEN + " Click to play this sound again!");
-        message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, commandLine));
-        message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Plays this sound again!")));
+        TextComponent prefix = new TextComponent(Devtools.getPrefix());
+        TextComponent message = new TextComponent(ChatColor.GREEN + " Click to play this sound again!");
+        TextComponent play = new TextComponent("[" + ChatColor.AQUA + "play again" + ChatColor.GRAY + "]" + ChatColor.RESET);
+        play.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, commandLine));
+        play.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Plays this sound again!")));
 
-        player.spigot().sendMessage(message);
+        TextComponent combinedMessage = new TextComponent(prefix, play, message);
+        player.spigot().sendMessage(combinedMessage);
     }
 }
