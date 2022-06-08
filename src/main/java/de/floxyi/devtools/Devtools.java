@@ -1,9 +1,6 @@
 package de.floxyi.devtools;
 
-import de.floxyi.devtools.commands.FlyCommand;
-import de.floxyi.devtools.commands.LocationCommand;
-import de.floxyi.devtools.commands.MaterialCommand;
-import de.floxyi.devtools.commands.SoundCommand;
+import de.floxyi.devtools.commands.*;
 import de.floxyi.devtools.updatechecker.JoinListener;
 import de.floxyi.devtools.updatechecker.UpdateChecker;
 import org.bstats.bukkit.Metrics;
@@ -61,6 +58,7 @@ public final class Devtools extends JavaPlugin {
         Objects.requireNonNull(getCommand("location")).setExecutor(new LocationCommand());
         Objects.requireNonNull(getCommand("material")).setExecutor(new MaterialCommand());
         Objects.requireNonNull(getCommand("sound")).setExecutor(new SoundCommand());
+        Objects.requireNonNull(getCommand("soundlistener")).setExecutor(new SoundListenerCommand());
     }
 
     private void listenerRegistration() {

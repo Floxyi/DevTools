@@ -73,6 +73,7 @@ public class SoundCommand implements TabExecutor {
         player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "The sound " + ChatColor.GOLD +
                 sound.name() + ChatColor.GREEN + " was played in normal volume and pitch!");
         sendReplayMessage(player, s, args);
+
         return true;
     }
 

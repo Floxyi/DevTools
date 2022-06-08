@@ -4,13 +4,16 @@ main: de.floxyi.devtools.Devtools
 api-version: 1.18
 authors: [ Floxyi ]
 description: Tools to make the life of a Java Plugin Developer way easier!
+softdepend: ['ProtocolLib']
 
 commands:
   location:
     description: Get the location of a player or a block and use it in your code (/location <player "player name"> <block "player name"> <view "player name">)
   sound:
     description: Plays the specified sound in a custom volume and pitch (/sound "sound name" <volume pitch>)
+  soundlistener:
+    description: Sends the revieved Sound of the player to its chat (/soundlistener)
   fly:
     description: Allows the player to fly in a specified speed (/fly "speed")
   material:
-    description: Get the creation code of the item you are currently holding in your main hand.
+    description: Get the creation code of the item you are currently holding in your main hand (/material)
