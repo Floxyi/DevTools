@@ -119,7 +119,7 @@ public class LocationCommand implements TabExecutor {
     public void sendCopyMessage(Player player, String output) {
         TextComponent prefix = new TextComponent(Devtools.getPrefix());
         TextComponent message = new TextComponent(ChatColor.GREEN + " Click to copy the location to the chat!");
-        TextComponent copy = new TextComponent("[" + ChatColor.AQUA + "copy location to clipboard" + ChatColor.GRAY + "]" + ChatColor.RESET);
+        TextComponent copy = new TextComponent(ChatColor.GRAY + "[" + ChatColor.AQUA + "Copy location" + ChatColor.GRAY + "]" + ChatColor.RESET);
         copy.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, output));
         copy.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Put location in the chat (STRG + A & STRG + C)")));
 

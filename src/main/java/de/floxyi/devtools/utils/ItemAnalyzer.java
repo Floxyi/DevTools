@@ -91,7 +91,7 @@ public class ItemAnalyzer {
         }
     }
 
-
+    // TODO: make setting for kotlin support
     public File generateItemCodeFile() {
         File fileDirectory = new File(Devtools.getPlugin().getDataFolder() + "\\itemCode");
         if(!fileDirectory.exists() && !fileDirectory.mkdirs()) {

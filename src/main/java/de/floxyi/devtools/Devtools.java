@@ -1,5 +1,7 @@
 package de.floxyi.devtools;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import de.floxyi.devtools.commands.*;
 import de.floxyi.devtools.updatechecker.JoinListener;
 import de.floxyi.devtools.updatechecker.UpdateChecker;
@@ -59,6 +61,7 @@ public final class Devtools extends JavaPlugin {
         Objects.requireNonNull(getCommand("material")).setExecutor(new MaterialCommand());
         Objects.requireNonNull(getCommand("sound")).setExecutor(new SoundCommand());
         Objects.requireNonNull(getCommand("soundlistener")).setExecutor(new SoundListenerCommand());
+        // TODO: add settings command
     }
 
     private void listenerRegistration() {

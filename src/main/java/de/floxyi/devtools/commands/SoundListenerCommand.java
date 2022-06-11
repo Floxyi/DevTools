@@ -20,6 +20,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +29,7 @@ public class SoundListenerCommand implements TabExecutor {
 
     ProtocolManager manager = ProtocolLibrary.getProtocolManager();
     ArrayList<UUID> players = new ArrayList<>();
+    ArrayList<String> lastMessage = new ArrayList<>();
     boolean isActive = false;
 
     @Override
@@ -49,17 +51,17 @@ public class SoundListenerCommand implements TabExecutor {
             return false;
         }
 
-        if(!isActive) {
-            isActive = true;
-            packetListener();
-        }
-
         if(players.contains(player.getUniqueId())) {
             players.remove(player.getUniqueId());
             player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "You " + ChatColor.GOLD + "deactivated" + ChatColor.GREEN + " the sound Listener!");
         } else {
             players.add(player.getUniqueId());
             player.sendMessage(Devtools.getPrefix() + ChatColor.GREEN + "You " + ChatColor.GOLD + "activated" + ChatColor.GREEN + " the sound Listener!");
+        }
+
+        if(!isActive) {
+            isActive = true;
+            packetListener();
         }
 
         return true;
@@ -97,13 +99,20 @@ public class SoundListenerCommand implements TabExecutor {
 
                 for(UUID uuid : players) {
                     if(event.getPlayer().getUniqueId().toString().equals(uuid.toString())) {
-                        String text = ChatColor.GOLD + sound.name() +
-                                ChatColor.GREEN + " played with " +
-                                ChatColor.GOLD + volume +
-                                ChatColor.GREEN + " volume and " +
-                                ChatColor.GOLD + pitch + ChatColor.GREEN + " pitch.";
 
-                        sendSoundMessage(event.getPlayer(), text, sound, volume, pitch);
+                        DecimalFormat df = new DecimalFormat("#.##");
+
+                        String text = ChatColor.GREEN + "♪ " + ChatColor.GOLD + sound.name() +
+                                ChatColor.GREEN + " v: " + df.format(volume) + ", p: " + df.format(pitch);
+
+                        int playerIndex = players.indexOf(uuid);
+
+                        // TODO: make this a setting (skipping same sounds)
+                        if(lastMessage.isEmpty() || !lastMessage.get(playerIndex).equals(text)) {
+                            sendSoundMessage(event.getPlayer(), text, sound, volume, pitch);
+                            lastMessage.add(playerIndex, text);
+                        }
+
                     }
                 }
             }
@@ -116,7 +125,7 @@ public class SoundListenerCommand implements TabExecutor {
     private void sendSoundMessage(Player player, String text, Sound sound, float volume, float pitch) {
         TextComponent prefix = new TextComponent(Devtools.getPrefix());
         TextComponent message = new TextComponent(" " + text);
-        TextComponent play = new TextComponent("[" + ChatColor.AQUA + "play again" + ChatColor.GRAY + "]" + ChatColor.RESET);
+        TextComponent play = new TextComponent(ChatColor.GRAY + "[" + ChatColor.AQUA + "Play again" + ChatColor.GRAY + "]" + ChatColor.RESET);
         play.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sound " + sound.name() + " " + volume + " " + pitch));
         play.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Plays this sound again!")));
 

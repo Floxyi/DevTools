@@ -25,6 +25,15 @@ With this command you can play every sound in the game before setting it in you 
 - **Note**: You can also type in the “**volume**” and “**pitch**” of the sound.
 
 
+## 2. Feature: Sound-Listener
+
+**/soundlistener**  
+With this command you will get all the incoming sound packets displayed in your chat.  
+So whenever you don't know how the sound of a zombie slamming a door is called, just try to get this sound in the game and look into your chat.
+
+- **Note**: You can only use this feature if you have [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/) installed.
+
+
 ## 3. Feature: Fly
 
 **/fly \<fly speed>"**  

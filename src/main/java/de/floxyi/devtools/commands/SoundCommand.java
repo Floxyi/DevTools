@@ -98,7 +98,7 @@ public class SoundCommand implements TabExecutor {
 
         TextComponent prefix = new TextComponent(Devtools.getPrefix());
         TextComponent message = new TextComponent(ChatColor.GREEN + " Click to play this sound again!");
-        TextComponent play = new TextComponent("[" + ChatColor.AQUA + "play again" + ChatColor.GRAY + "]" + ChatColor.RESET);
+        TextComponent play = new TextComponent(ChatColor.GRAY + "[" + ChatColor.AQUA + "Play again" + ChatColor.GRAY + "]" + ChatColor.RESET);
         play.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, commandLine));
         play.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Plays this sound again!")));
 

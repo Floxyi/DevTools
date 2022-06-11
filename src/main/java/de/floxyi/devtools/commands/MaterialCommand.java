@@ -41,6 +41,8 @@ public class MaterialCommand implements TabExecutor {
         ItemAnalyzer itemAnalyzer = new ItemAnalyzer(player.getInventory().getItemInMainHand());
 
         itemAnalyzer.sendItemInfo(player);
+
+        // TODO: make this an optional setting
         File codeFile = itemAnalyzer.generateItemCodeFile();
 
         if(codeFile == null) {
@@ -63,7 +65,7 @@ public class MaterialCommand implements TabExecutor {
 
         TextComponent prefix = new TextComponent(Devtools.getPrefix());
         TextComponent message = new TextComponent(ChatColor.GREEN + " Click to get the path to the code file!");
-        TextComponent copy = new TextComponent("[" + ChatColor.AQUA + "Copy path" + ChatColor.GRAY + "]" + ChatColor.RESET);
+        TextComponent copy = new TextComponent(ChatColor.GRAY + "[" + ChatColor.AQUA + "Copy path" + ChatColor.GRAY + "]" + ChatColor.RESET);
         copy.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, path));
         copy.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("If you are running a local test server, you can click to copy the file path!")));
 
